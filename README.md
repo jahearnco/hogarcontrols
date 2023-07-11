@@ -1,4 +1,3 @@
-# hogarcontrols
 Java Application Developer Assessment
 
 Business Requirement
@@ -9,22 +8,22 @@ Given all the transactions of every customer during a period of time(1 year for 
 
 Solution Requirement
 
-	•	Create some Restful APIs to get customer's reward points. By customized input like user id or user name.
- 
-	•	Use common sense to make assumptions.
- 
-	•	Consider the API security and confidentiality of user data.
- 
-	•	Make up a data set to best demonstrate your solution.
- 
-	•	The solution should demonstrate the design of API, business logic and data storage.
- 
-	•	Use SpringBoot 2 or 3.
- 
-	•	Frontend is not required, but the solution should include instructions of how to build, run and validate the result.
- 
-	•	The solution should be independently executed without any external dependencies like DB and APIs. Embedded DB is allowed.
- 
-	•	Should have proper Unit test cases.
- 
-	•	Code should be shared via github link using a public repository.
+Create some Restful APIs to get customer's reward points. By customized input like user id or user name.
+
+Use common sense to make assumptions.
+
+Consider the API security and confidentiality of user data.
+
+Make up a data set to best demonstrate your solution.
+
+The solution should demonstrate the design of API, business logic and data storage.
+
+Use SpringBoot 2 or 3.
+
+Frontend is not required, but the solution should include instructions of how to build, run and validate the result.
+
+The solution should be independently executed without any external dependencies like DB and APIs. Embedded DB is allowed.
+
+Should have proper Unit test cases.
+
+Code should be shared via github link using a public repository.
