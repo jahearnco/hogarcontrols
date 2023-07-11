@@ -179,7 +179,6 @@ class CustomerController {
 		Map<Long, Map<String, Integer>> rRwdsTotalByTimeInterval = new HashMap<Long, Map<String, Integer>>();
 				  
 		Map<Long, Map<String, List<Integer>>> allRwdsMapByTimeInterval = getMonthlyRewardsMap(epochSecsRangeBegin, epochSecsRangeEnd, tzIdPrefix, tzIdSuffix);
-		List<Customer> acs = allCustomers();
 
 		for (Map.Entry<Long, Map<String, List<Integer>>> entry : allRwdsMapByTimeInterval.entrySet()) {
 
@@ -225,7 +224,7 @@ class CustomerController {
 	
 	  @DeleteMapping("/customers/{id}")
 	  void deleteCustomer(@PathVariable Long id) {
-		Customer c = (Customer)customerRepo.findById(id)
+		customerRepo.findById(id)
 				.orElseThrow(() -> new CustomerNotFoundException(id));
 		  
 	    customerRepo.deleteById(id);

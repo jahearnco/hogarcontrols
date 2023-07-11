@@ -11,8 +11,6 @@ import javax.persistence.Id;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.everphase.hogar.customer.Customer;
-
 @Entity
 public class Transaction {
 	  private static Logger log = LoggerFactory.getLogger(Transaction.class);

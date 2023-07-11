@@ -2,7 +2,6 @@ package com.everphase.hogar.customer;
 
 import com.everphase.hogar.transaction.Transaction;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 

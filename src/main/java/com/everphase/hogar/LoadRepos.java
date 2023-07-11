@@ -1,7 +1,5 @@
 package com.everphase.hogar;
 
-import java.math.BigDecimal;
-
 import com.everphase.hogar.transaction.Transaction;
 import com.everphase.hogar.transaction.TransactionRepository;
 import com.everphase.hogar.customer.Customer;
