@@ -15,11 +15,10 @@ An Embedded Db was implemented for this challenge. Apache Maven is used along wi
 
 The following dependency was added to pom.xml to provide more RESTful functionality.
 
-<dependency>
-	<groupId>org.springframework.boot</groupId>
-	<artifactId>spring-boot-starter-hateoas</artifactId>
-</dependency>
-
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-hateoas</artifactId>
+	</dependency>
 
 Well over 90% of logic is presented according to CustomerController.java class.
 
