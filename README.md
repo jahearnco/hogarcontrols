@@ -20,6 +20,7 @@ The following dependency was added to pom.xml to provide more RESTful functional
 	<artifactId>spring-boot-starter-hateoas</artifactId>
 </dependency>
 
+
 Well over 90% of logic is presented according to CustomerController.java class.
 
 Given more time I would have fleshed out test cases per src/test/java classes with use case and workflow specific logic to standarding testing procedures. Instead I chose to present testing process via comments added to test_cases.txt file. Please view this file.
