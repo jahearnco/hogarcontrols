@@ -11,7 +11,14 @@ public class HogarApplication {
 	}
 }
 
-An Embedded Db was implemented for this challenge. 
+An Embedded Db was implemented for this challenge. Apache Maven is used along with Spring Boot for product and build management. Please see pom.xml and mvnw files. 
+
+The following dependency was added to pom.xml to provide more RESTful functionality.
+
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-hateoas</artifactId>
+</dependency>
 
 Well over 90% of logic is presented according to CustomerController.java class.
 
