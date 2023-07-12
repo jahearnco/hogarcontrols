@@ -2,6 +2,10 @@ This is a Hogar Controls coding assessment challenge as defined below "Java Appl
 
 SpringToolSuite4 was used as IDE. STS4 has Eclipse as its foundation. Class compilation, run and debug launch proceed in standard fashion.
 
+Entry point is @ src/main/java/com/everphase/hogar - link is below:
+
+https://github.com/jahearnco/hogarcontrols/tree/main/src/main/java/com/everphase/hogar
+
 Application Launch begins @ HogarApplication.java as shown below. Once running tests can proceed per curl -X command line as shown in test_cases.txt file provided at root level of project.
 
 @SpringBootApplication
