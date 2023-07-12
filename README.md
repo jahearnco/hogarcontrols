@@ -19,6 +19,21 @@ The following dependency was added to pom.xml to provide more RESTful functional
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-hateoas</artifactId>
 	</dependency>
+	
+
+I have provided one example of an API call that returns links as shown below. It would be a simple but slightly time consuming matter to modify the rest of my solution such that all @GetMappings return links in the same manner. However, as there is no UI being implemented and I have no knowledge wrt what the UI might be I consider it to be more versatile to return the information as json so UI is free to do what it will with the information. That may include links and it may not. This is for a future project in other words.
+
+@GetMapping("/customers/{id}")
+EntityModel<Customer> one(@PathVariable Long id) {
+
+  Customer customer = customerRepo.findById(id) //
+    .orElseThrow(() -> new CustomerNotFoundException(id));
+
+  return EntityModel.of(customer, //
+    linkTo(methodOn(CustomerController.class).one(id)).withSelfRel(),
+    linkTo(methodOn(CustomerController.class).allCustomers()).withRel("customers"));
+}
+
 
 Well over 90% of logic is presented according to CustomerController.java class.
 

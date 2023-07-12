@@ -20,6 +20,7 @@ import java.time.ZoneId;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +28,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 class CustomerController {
@@ -40,7 +44,7 @@ class CustomerController {
 	    this.customerRepo = customerRepo;
 	    this.transactionRepo = transactionRepo;
 	  }
-	
+	  
 	  // Aggregate root
 	  @GetMapping("/customers")
 	  List<Customer> allCustomers() {
@@ -92,17 +96,28 @@ class CustomerController {
 		  
 		  return customerRepo.save(newCustomer);
 	  }
+
+	  @GetMapping("/customers/{id}")
+	  EntityModel<Customer> one(@PathVariable Long id) {
+
+		  Customer customer = customerRepo.findById(id) //
+	        .orElseThrow(() -> new CustomerNotFoundException(id));
+
+	      return EntityModel.of(customer, //
+	        linkTo(methodOn(CustomerController.class).one(id)).withSelfRel(),
+	        linkTo(methodOn(CustomerController.class).allCustomers()).withRel("customers"));
+	  }
 	  
 	  //get a specific customer by id
-	  @GetMapping("/customers/{id}")
-	  Customer getCustomerById(@PathVariable Long id) {
+	  //@GetMapping("/customers/{id}")
+	  Customer customerById(@PathVariable Long id) {
 	    
 	    return customerRepo.findById(id)
 	      .orElseThrow(() -> new CustomerNotFoundException(id));
 	  }
 	  
-	//get a specific customer by userId
-	  @GetMapping("/customers/{id}/userId")
+	  //get a specific customer by userId
+	  //@GetMapping("/customers/{id}/userId")
 	  String getCustomerUserId(@PathVariable Long id) {
 	    
 		  Customer c = customerRepo.findById(id)
@@ -222,7 +237,7 @@ class CustomerController {
 		    if (id == -1L) {
 		    	acs.addAll(allCustomers());
 		    }else {
-		    	acs.add(getCustomerById(id));
+		    	acs.add(customerById(id));
 		    }
 		    
 			for (Customer c : acs) {
