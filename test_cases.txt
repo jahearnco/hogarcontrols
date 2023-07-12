@@ -1,63 +1,219 @@
 
+/**
+ * @GetMapping("/customers")
+ * List<Customer> allCustomers()
+ * 
+ * return all persisted Customer objects - a test Customer was created upon startup
+ */
  ~ % curl -X GET localhost:6006/customers                                                            
-[{"id":2,"transactions":[{"id":1,"userId":null,"amount":null,"epochSecs":null,"rewardsPoints":null}],"transactionIds":[],"userId":"customer0","rewardsPoints":null}]%                                                                                                                           
+[{"id":2,"transactions":[{"id":1,"userId":null,"amount":null,"epochSecs":null,"rewardsPoints":null}],"transactionIds":[],"userId":"customer0","rewardsPoints":null}]%                                                                                                                            ~ %                                                                                                    
 
 
+
+/**
+ * @DeleteMapping("/customers/{id}")
+ * void deleteCustomer(@PathVariable Long id)
+ * 
+ * delete persisted Customer by id - throw exception and report back nicely if Customer does not exist
+ */
  ~ % curl -X DELETE localhost:6006/customers/1
-Could not find customer 1%                                                                                                                      
+Could not find customer 1%                                                                                                                       ~ % 
 
 
+/**
+ * @DeleteMapping("/customers/{id}")
+ * void deleteCustomer(@PathVariable Long id)
+ * 
+ * delete test Customer created at startup
+ */
  ~ % curl -X DELETE localhost:6006/customers/2
 
 
+
+/**
+ * @GetMapping("/customers")
+ * List<Customer> allCustomers()
+ * 
+ * return all persisted Customer objects - in this case there are none
+ */
  ~ % curl -X GET localhost:6006/customers     
-[]%                                                                                                                                             
+[]%                                                                                                                                              ~ % 
 
 
+
+/**
+ * @PostMapping("/customers")
+ * Customer addCustomer(@RequestBody Customer customerIn)
+ * 
+ * add Customer info via POST body, calculate rewards points, persist transactions if any, add list of transaction ids to Customer if any exist, and persist Customer 
+ */
  ~ % curl -X POST localhost:6006/customers -H 'Content-type:application/json' -d '{"userId": "27q066xe11", "transactions": [{"amount":251.00, "epochSecs":168869598},{"amount":20.00, "epochSecs":168839598}]}'
-{"id":5,"transactions":[],"transactionIds":[3,4],"userId":"27q066xe11","rewardsPoints":352}%                                                    
+{"id":5,"transactions":[],"transactionIds":[3,4],"userId":"27q066xe11","rewardsPoints":352}%                                                     ~ % 
+
+
 
 
  ~ % curl -X PUT localhost:6006/customers/5 -H 'Content-type:application/json' -d '{"userId": "27q066xe11", "transactions": [{"amount":99.00, "epochSecs":1675898450},{"amount":220.00, "epochSecs":1680098450}]}'
-{"id":5,"transactions":[],"transactionIds":[3,4,6,7],"userId":"27q066xe11","rewardsPoints":691}%                                                
+{"id":5,"transactions":[],"transactionIds":[3,4,6,7],"userId":"27q066xe11","rewardsPoints":691}%                                                 ~ % 
 
 
- ~ % curl -X POST localhost:6006/customers -H 'Content-type:application/json' -d '{"userId": "27q066xe22", "transactions": [{"amount":251.00, "epochSecs":1664895980},{"amount":20.00, "epochSecs":1670098450}]}'
-{"id":10,"transactions":[],"transactionIds":[8,9],"userId":"27q066xe22","rewardsPoints":352}%                                                   
+
+/**
+ * @PostMapping("/customers")
+ * Customer addCustomer(@RequestBody Customer customerIn)
+ */
+ ~ % curl -X POST localhost:6006/customers -H 'Content-type:application/json' -d '{"userId": "27q066xe22", "transactions": [{"amount":251.00, "epochSecs":1664895980},{"amount":20.00, "epochSecs":1670098450}]}' 
+{"id":10,"transactions":[],"transactionIds":[8,9],"userId":"27q066xe22","rewardsPoints":352}%                                                    ~ % 
 
 
+
+/**
+ * @PutMapping("/customers/{id}")
+ * Customer updateCustomer(@RequestBody Customer customerIn, @PathVariable Long id)
+ * 
+ * update persisted Customer via PUT body, calculate rewards points, persist transactions if any, add list of transaction ids to Customer if any exist, and persist Customer 
+ */
  ~ % curl -X PUT localhost:6006/customers/5 -H 'Content-type:application/json' -d '{"userId": "27q066xe22", "transactions": [{"amount":250.00, "epochSecs":1658198450},{"amount":111.00, "epochSecs":1659998450}]}'
-UserId = "27q066xe22" is invalid%                                                                                                               
+UserId = "27q066xe22" is invalid%                                                                                                                ~ % 
 
 
- ~ % curl -X PUT localhost:6006/customers/10 -H 'Content-type:application/json' -d '{"userId": "27q066xe22", "transactions": [{"amount":250.00, "epochSecs":1658198450},{"amount":111.00, "epochSecs":1659998450}]}' 
-{"id":10,"transactions":[],"transactionIds":[8,9,11,12],"userId":"27q066xe22","rewardsPoints":774}%                                             
+
+/**
+ * @PutMapping("/customers/{id}")
+ * Customer updateCustomer(@RequestBody Customer customerIn, @PathVariable Long id)
+ */
+ ~ % curl -X PUT localhost:6006/customers/10 -H 'Content-type:application/json' -d '{"userId": "27q066xe22", "transactions": [{"amount":250.00, "epochSecs":1658198450},{"amount":111.00, "epochSecs":1659998450}]}'
+{"id":10,"transactions":[],"transactionIds":[8,9,11,12],"userId":"27q066xe22","rewardsPoints":774}%                                              ~ % 
 
 
- ~ % curl -X PUT localhost:6006/customers/10 -H 'Content-type:application/json' -d '{"userId": "27q066xe22", "transactions": [{"amount":61.00, "epochSecs":1687998450},{"amount":200.00, "epochSecs":1687898450}]}'
-{"id":10,"transactions":[],"transactionIds":[8,9,11,12,13,14],"userId":"27q066xe22","rewardsPoints":1035}%                                      
+
+/**
+ * @PutMapping("/customers/{id}")
+ * Customer updateCustomer(@RequestBody Customer customerIn, @PathVariable Long id)
+ */
+ ~ % curl -X PUT localhost:6006/customers/10 -H 'Content-type:application/json' -d '{"userId": "27q066xe22", "transactions": [{"amount":61.00, "epochSecs":1687998450},{"amount":200.00, "epochSecs":1687898450}]}' 
+{"id":10,"transactions":[],"transactionIds":[8,9,11,12,13,14],"userId":"27q066xe22","rewardsPoints":1035}%                                       ~ % 
 
 
+
+/**
+ * @PostMapping("/customers")
+ * Customer addCustomer(@RequestBody Customer customerIn) 
+ */
+ ~ % curl -X POST localhost:6006/customers -H 'Content-type:application/json' -d '{"userId": "27q066xe33", "transactions": [{"amount":201.00, "epochSecs":1665895980},{"amount":820.00, "epochSecs":1672098450}]}' 
+{"id":17,"transactions":[],"transactionIds":[15,16],"userId":"27q066xe33","rewardsPoints":1742}%                                                 ~ % 
+
+
+
+/**
+ * @PostMapping("/customers")
+ * Customer addCustomer(@RequestBody Customer customerIn)
+ * 
+ * return well formatted exception result if trying to add a Customer with userId that already exists
+ */
  ~ % curl -X POST localhost:6006/customers -H 'Content-type:application/json' -d '{"userId": "27q066xe33", "transactions": [{"amount":201.00, "epochSecs":1665895980},{"amount":820.00, "epochSecs":1672098450}]}'
-{"id":17,"transactions":[],"transactionIds":[15,16],"userId":"27q066xe33","rewardsPoints":1742}%                                                
+UserId exists 27q066xe33%                                                                                                                        ~ % 
 
 
- ~ % curl -X PUT localhost:6006/customers/17 -H 'Content-type:application/json' -d '{"userId": "27q066xe33", "transactions": [{"amount":61.00, "epochSecs":1669498450},{"amount":200.00, "epochSecs":1676898450}]}'
-{"id":17,"transactions":[],"transactionIds":[15,16,18,19],"userId":"27q066xe33","rewardsPoints":2003}% 
+
+/**
+ * @PostMapping("/customers")
+ * Customer addCustomer(@RequestBody Customer customerIn) 
+ */
+ ~ % curl -X POST localhost:6006/customers -H 'Content-type:application/json' -d '{"userId": "27q066xe44", "transactions": []}'                                                                                   
+{"id":18,"transactions":[],"transactionIds":[],"userId":"27q066xe44","rewardsPoints":null}%                                                      ~ % 
 
 
- ~ % curl -X GET localhost:6006/customers     
-[{"id":5,"transactions":[],"transactionIds":[3,4,6,7],"userId":"27q066xe11","rewardsPoints":691},{"id":10,"transactions":[],"transactionIds":[8,9,11,12,13,14],"userId":"27q066xe22","rewardsPoints":1035},{"id":17,"transactions":[],"transactionIds":[15,16,18,19],"userId":"27q066xe33","rewardsPoints":2003}]%                                                                                                                              
+
+/**
+ * @GetMapping("/customers")
+ * List<Customer> allCustomers()
+ */
+ ~ % curl -X GET localhost:6006/customers 
+[{"id":5,"transactions":[],"transactionIds":[3,4,6,7],"userId":"27q066xe11","rewardsPoints":691},{"id":10,"transactions":[],"transactionIds":[8,9,11,12,13,14],"userId":"27q066xe22","rewardsPoints":1035},{"id":17,"transactions":[],"transactionIds":[15,16],"userId":"27q066xe33","rewardsPoints":1742},{"id":18,"transactions":[],"transactionIds":[],"userId":"27q066xe44","rewardsPoints":null}]%                                          ~ % 
 
 
- ~ % curl -X GET localhost:6006/customers/monthlyRewardsTotals/0/1690873200/America/Los_Angeles 
-{"17":{"DECEMBER-2022":1490,"NOVEMBER-2022":11,"OCTOBER-2022":252,"FEBRUARY-2023":250},"5":{"FEBRUARY-2023":49,"MAY-1975":352,"MARCH-2023":290},"10":{"DECEMBER-2022":0,"OCTOBER-2022":352,"JULY-2022":350,"AUGUST-2022":72,"JUNE-2023":261}}%                                                 
+/**
+ * @GetMapping("/customers/{id}/monthlyRewardsMap/{epochSecsRangeBegin}/{epochSecsRangeEnd}/{tzIdPrefix}/{tzIdSuffix}")
+ * Map<Long, Map<String, List<Integer>>> getMonthlyRewardsMap(@PathVariable Long id, @PathVariable Long epochSecsRangeBegin, @PathVariable Long epochSecsRangeEnd, @PathVariable String tzIdPrefix, @PathVariable String tzIdSuffix)
+ *
+ * {id} = -1 designates that all customer maps be returned, otherwise if id is specific return only rewards map of that Customer
+ * {epochSecsRangeBegin} = 0 - return all rewards map since Jan 1 1970 12:00 am, "Etc/UTC"
+ * {epochSecsRangeEnd} = 1690873200 corresponds to end date Aug 1 12:00 am, 2023 "America/Los_Angeles"
+ */
+ ~ % curl -X GET localhost:6006/customers/-1/monthlyRewardsMap/0/1690873200/America/Los_Angeles
+{"17":{"DECEMBER-2022":[1490],"OCTOBER-2022":[252]},"18":{},"5":{"FEBRUARY-2023":[49],"MAY-1975":[352,0],"MARCH-2023":[290]},"10":{"DECEMBER-2022":[0],"OCTOBER-2022":[352],"JULY-2022":[350],"AUGUST-2022":[72],"JUNE-2023":[11,250]}}%                                                         ~ %                                                                                           
 
 
- ~ % curl -X GET localhost:6006/customers/monthlyRewardsMap/1672560000/1690873200/America/Los_Angeles
-{"17":{"FEBRUARY-2023":[250]},"5":{"FEBRUARY-2023":[49],"MARCH-2023":[290]},"10":{"JUNE-2023":[11,250]}}%                                       
+
+/**
+ * @GetMapping("/customers/{id}/monthlyRewardsMap/{epochSecsRangeBegin}/{epochSecsRangeEnd}/{tzIdPrefix}/{tzIdSuffix}")
+ * Map<Long, Map<String, List<Integer>>> getMonthlyRewardsMap(@PathVariable Long id, @PathVariable Long epochSecsRangeBegin, @PathVariable Long epochSecsRangeEnd, @PathVariable String tzIdPrefix, @PathVariable String tzIdSuffix)
+ *
+ * {id} = 5 -  return  rewards map of Customer with id = 5
+ * {epochSecsRangeBegin} = 0 - return all rewards map since Jan 1 1970 12:00 am, "Etc/UTC"
+ * {epochSecsRangeEnd} = 1690873200 corresponds to end date Aug 1 12:00 am, 2023 "America/Los_Angeles"
+ */
+ ~ % curl -X GET localhost:6006/customers/5/monthlyRewardsMap/0/1690873200/America/Los_Angeles
+{"5":{"FEBRUARY-2023":[49],"MAY-1975":[352,0],"MARCH-2023":[290]}}%                                                                              ~ %                                                                                          
 
 
- ~ % curl -X GET localhost:6006/customers/monthlyRewardsTotals/1672560000/1690873200/America/Los_Angeles
-{"17":{"FEBRUARY-2023":250},"5":{"FEBRUARY-2023":49,"MARCH-2023":290},"10":{"JUNE-2023":261}}%                                                  
+
+/**
+ * @GetMapping("/customers/{id}/monthlyRewardsMap/{epochSecsRangeBegin}/{epochSecsRangeEnd}/{tzIdPrefix}/{tzIdSuffix}")
+ * Map<Long, Map<String, List<Integer>>> getMonthlyRewardsMap(@PathVariable Long id, @PathVariable Long epochSecsRangeBegin, @PathVariable Long epochSecsRangeEnd, @PathVariable String tzIdPrefix, @PathVariable String tzIdSuffix)
+ *
+ * {id} = 5 -  return  rewards map of Customer with id = 10
+ * {epochSecsRangeBegin} = 0 - return all rewards map since Jan 1 1970 12:00 am, "Etc/UTC"
+ * {epochSecsRangeEnd} = 1690873200 corresponds to end date Aug 1 12:00 am, 2023 "America/Los_Angeles"
+ */
+ ~ % curl -X GET localhost:6006/customers/10/monthlyRewardsMap/0/1690873200/America/Los_Angeles
+{"10":{"DECEMBER-2022":[0],"OCTOBER-2022":[352],"JULY-2022":[350],"AUGUST-2022":[72],"JUNE-2023":[11,250]}}%                                     ~ % 
+
+
+
+/**
+ * @GetMapping("/customers/{id}/monthlyRewardsTotals/{epochSecsRangeBegin}/{epochSecsRangeEnd}/{tzIdPrefix}/{tzIdSuffix}")
+ * Map<Long, Map<String, Map<String, Integer>>> getMonthlyRewardsTotals(@PathVariable Long id, @PathVariable Long epochSecsRangeBegin, @PathVariable Long epochSecsRangeEnd, @PathVariable String tzIdPrefix, @PathVariable String tzIdSuffix) {
+ *
+ * {id} = 10 -  return  rewards totals of Customer with id = 10
+ * {epochSecsRangeBegin} = 0 - return all rewards totals since Jan 1 1970 12:00 am, "Etc/UTC"
+ * {epochSecsRangeEnd} = 1690873200 corresponds to end date Aug 1 12:00 am, 2023 "America/Los_Angeles"
+ *
+ * total rewards are calculated for the time period designated and included in the title
+ */
+ ~ % curl -X GET localhost:6006/customers/10/monthlyRewardsTotals/0/1690873200/America/Los_Angeles
+{"10":{"Total Rewards = 1035 For Customer id =10 Between Dec-31-1969 04:00:00 PM And Aug-01-2023 12:00:00 AM.":{"DECEMBER-2022":0,"OCTOBER-2022":352,"JULY-2022":350,"AUGUST-2022":72,"JUNE-2023":261}}}%                                                                                        ~ % 
+
+
+
+/**
+ * @GetMapping("/customers/{id}/monthlyRewardsTotals/{epochSecsRangeBegin}/{epochSecsRangeEnd}/{tzIdPrefix}/{tzIdSuffix}")
+ * Map<Long, Map<String, Map<String, Integer>>> getMonthlyRewardsTotals(@PathVariable Long id, @PathVariable Long epochSecsRangeBegin, @PathVariable Long epochSecsRangeEnd, @PathVariable String tzIdPrefix, @PathVariable String tzIdSuffix) {
+ *
+ * {id} = 10 -  return  rewards totals of Customer with id = 10
+ * {epochSecsRangeBegin} = 1672560000 corresponds to begin date Jan 1 12:00 am, 2023 "America/Los_Angeles"
+ * {epochSecsRangeEnd} = 1690873200 corresponds to end date Aug 1 12:00 am, 2023 "America/Los_Angeles"
+ *
+ * total rewards are calculated for the time period designated and included in the title
+ */
+ ~ % curl -X GET localhost:6006/customers/10/monthlyRewardsTotals/1672560000/1690873200/America/Los_Angeles
+{"10":{"Total Rewards = 261 For Customer id =10 Between Jan-01-2023 12:00:00 AM And Aug-01-2023 12:00:00 AM.":{"JUNE-2023":261}}}%               ~ % 
+
+
+
+/**
+ * @GetMapping("/customers/{id}/monthlyRewardsTotals/{epochSecsRangeBegin}/{epochSecsRangeEnd}/{tzIdPrefix}/{tzIdSuffix}")
+ * Map<Long, Map<String, Map<String, Integer>>> getMonthlyRewardsTotals(@PathVariable Long id, @PathVariable Long epochSecsRangeBegin, @PathVariable Long epochSecsRangeEnd, @PathVariable String tzIdPrefix, @PathVariable String tzIdSuffix) {
+ *
+ * {id} = -1 -  return  rewards totals for all customers
+ * {epochSecsRangeBegin} = 1672560000 corresponds to begin date Jan 1 12:00 am, 2023 "America/Los_Angeles"
+ * {epochSecsRangeEnd} = 1690873200 corresponds to end date Aug 1 12:00 am, 2023 "America/Los_Angeles"
+ *
+ * total rewards are calculated for the time period designated and included in the title
+ */
+ ~ % curl -X GET localhost:6006/customers/-1/monthlyRewardsTotals/1672560000/1690873200/America/Los_Angeles
+{"17":{"Total Rewards = 0 For Customer id =17 Between Jan-01-2023 12:00:00 AM And Aug-01-2023 12:00:00 AM.":{}},"18":{"Total Rewards = 0 For Customer id =18 Between Jan-01-2023 12:00:00 AM And Aug-01-2023 12:00:00 AM.":{}},"5":{"Total Rewards = 339 For Customer id =5 Between Jan-01-2023 12:00:00 AM And Aug-01-2023 12:00:00 AM.":{"FEBRUARY-2023":49,"MARCH-2023":290}},"10":{"Total Rewards = 261 For Customer id =10 Between Jan-01-2023 12:00:00 AM And Aug-01-2023 12:00:00 AM.":{"JUNE-2023":261}}}%                                                                               ~ % 
+
+
 

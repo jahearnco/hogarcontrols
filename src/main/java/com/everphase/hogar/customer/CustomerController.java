@@ -44,18 +44,18 @@ class CustomerController {
 	  // Aggregate root
 	  @GetMapping("/customers")
 	  List<Customer> allCustomers() {
-		SimpleDateFormat formatter = new SimpleDateFormat("dd-M-yyyy hh:mm:ss a", Locale.ENGLISH);
+		SimpleDateFormat formatter = new SimpleDateFormat("MMM-dd-yyyy hh:mm:ss a", Locale.ENGLISH);
 		formatter.setTimeZone(TimeZone.getTimeZone("America/Los_Angeles"));
 
 		//spit out date info for reference
 		try {
-			String dateInStart = "01-01-2023 00:00:0 AM"; 
+			String dateInStart = "Jan-01-2023 00:00:00 AM"; 
 			Date dJan01 = formatter.parse(dateInStart);
 			  
 			log.info("dJan01 date = "+dJan01);
 			log.info("dJan01 date epochMs = "+dJan01.getTime());
 	
-			String dateInEnd = "01-08-2023 00:00:00 AM"; 
+			String dateInEnd = "Jul-01-2023 00:00:00 AM"; 
 			Date d = formatter.parse(dateInEnd);
 	
 			log.info("Aug 1 = "+d);
@@ -137,63 +137,47 @@ class CustomerController {
 	  }
 	  
 	  //return all rewards by range and timezoneid. @PathVariable are required
-	  @GetMapping("/customers/monthlyRewardsMap/{epochSecsRangeBegin}/{epochSecsRangeEnd}/{tzIdPrefix}/{tzIdSuffix}")
-	  Map<Long, Map<String, List<Integer>>> getMonthlyRewardsMap(@PathVariable Long epochSecsRangeBegin, @PathVariable Long epochSecsRangeEnd, @PathVariable String tzIdPrefix, @PathVariable String tzIdSuffix) {
-		Map<Long, Map<String, List<Integer>>> allRwdsMapByTimeInterval = new HashMap<>();
-		List<Customer> acs = allCustomers();
-
-		for (Customer c : acs) {
-			Map<String, List<Integer>> cmRwdsMapByTimeInterval = new HashMap<String, List<Integer>>();
-		    allRwdsMapByTimeInterval.put(c.getId(), cmRwdsMapByTimeInterval);
-		    
-			List<Long> tIds = c.getTransactionIds();
-		    List<Transaction> ts = (ArrayList<Transaction>)filterTransactionsByDateRange(tIds, epochSecsRangeBegin, epochSecsRangeEnd);	
-		    
-		    for (Transaction t : ts) {
-		    	Date date = new Date(t.getEpochSecs() * 1000);
-		    	log.info("date = "+date);
-		    	
-		    	ZoneId zId = ZoneId.of(tzIdPrefix+"/"+tzIdSuffix);
-		    	log.info("tzIdPrefix = "+tzIdPrefix);
-		    	log.info("tzIdSuffix = "+tzIdSuffix);
-		    	log.info("zId = "+zId);
-		    	
-		    	LocalDate localDate = date.toInstant().atZone(zId).toLocalDate();
-		    	log.info("localDate = "+localDate);
-		    	
-		    	Month m = Month.of(localDate.getMonthValue());
-		    	Year y = Year.of(localDate.getYear());
-		    	String myStr = m.toString() + "-" + y.toString();
-		    	
-		    	List<Integer> rwdsList = cmRwdsMapByTimeInterval.containsKey(myStr) ? cmRwdsMapByTimeInterval.get(myStr) : new ArrayList<Integer>();
-		    	rwdsList.add(t.getRewardsPoints());
-		    	cmRwdsMapByTimeInterval.put(myStr, rwdsList);
-		    }
-		}
-	    return allRwdsMapByTimeInterval;
+	  @GetMapping("/customers/{id}/monthlyRewardsMap/{epochSecsRangeBegin}/{epochSecsRangeEnd}/{tzIdPrefix}/{tzIdSuffix}")
+	  Map<Long, Map<String, List<Integer>>> getMonthlyRewardsMap(@PathVariable Long id, @PathVariable Long epochSecsRangeBegin, @PathVariable Long epochSecsRangeEnd, @PathVariable String tzIdPrefix, @PathVariable String tzIdSuffix) {
+		return getAllRwdsMapByTimeInterval(id, epochSecsRangeBegin, epochSecsRangeEnd, tzIdPrefix, tzIdSuffix);
 	  }
 	  
 	  //return total rewards by customer id and by month. @PathVariable are required
-	  @GetMapping("/customers/monthlyRewardsTotals/{epochSecsRangeBegin}/{epochSecsRangeEnd}/{tzIdPrefix}/{tzIdSuffix}")
-	  Map<Long, Map<String, Integer>> getMonthlyRewardsTotals(@PathVariable Long epochSecsRangeBegin, @PathVariable Long epochSecsRangeEnd, @PathVariable String tzIdPrefix, @PathVariable String tzIdSuffix) {
-		Map<Long, Map<String, Integer>> rRwdsTotalByTimeInterval = new HashMap<Long, Map<String, Integer>>();
+	  @GetMapping("/customers/{id}/monthlyRewardsTotals/{epochSecsRangeBegin}/{epochSecsRangeEnd}/{tzIdPrefix}/{tzIdSuffix}")
+	  Map<Long, Map<String, Map<String, Integer>>> getMonthlyRewardsTotals(@PathVariable Long id, @PathVariable Long epochSecsRangeBegin, @PathVariable Long epochSecsRangeEnd, @PathVariable String tzIdPrefix, @PathVariable String tzIdSuffix) {
+		Map<Long, Map<String, Map<String, Integer>>> rRwdsTotalByTimeInterval = new HashMap<Long, Map<String, Map<String, Integer>>>();
 				  
-		Map<Long, Map<String, List<Integer>>> allRwdsMapByTimeInterval = getMonthlyRewardsMap(epochSecsRangeBegin, epochSecsRangeEnd, tzIdPrefix, tzIdSuffix);
+		Map<Long, Map<String, List<Integer>>> allRwdsMapByTimeInterval = getMonthlyRewardsMap(id, epochSecsRangeBegin, epochSecsRangeEnd, tzIdPrefix, tzIdSuffix);
 
 		for (Map.Entry<Long, Map<String, List<Integer>>> entry : allRwdsMapByTimeInterval.entrySet()) {
 
 			Map<String, Integer> mSI = new HashMap<String, Integer>();
+			Map<String, Map<String, Integer>> totalsMapByCustomer = new HashMap<String, Map<String, Integer>>();
+			
+			Integer rwdsTot = 0;
+			
 		    for (Map.Entry<String, List<Integer>> monthlyRewardsMap : (entry.getValue()).entrySet()) {
 		    	log.info("monthlyRewardsMap.getKey() " + monthlyRewardsMap.getKey() + " & monthlyRewardsMap.getValue() " + monthlyRewardsMap.getValue());
 		    	
-		    	Integer rwdsTot = 0;
+				Integer rwds = 0;
 		    	for (Integer i : (List<Integer>)monthlyRewardsMap.getValue()) {
-		    		rwdsTot += i;
+		    		rwds += i;
 		    	}
-		    	mSI.put((String)monthlyRewardsMap.getKey(), rwdsTot);
+		    	
+		    	mSI.put((String)monthlyRewardsMap.getKey(), rwds);
+		    	rwdsTot += rwds;
 		    }
-		    
-		    rRwdsTotalByTimeInterval.put(entry.getKey(), mSI);
+		     
+
+			SimpleDateFormat formatter = new SimpleDateFormat("MMM-dd-yyyy hh:mm:ss a", Locale.ENGLISH);
+			formatter.setTimeZone(TimeZone.getTimeZone(tzIdPrefix+"/"+tzIdSuffix));
+			String dateTimeBegin = formatter.format(new Date(epochSecsRangeBegin*1000L));
+			String dateTimeEnd = formatter.format(new Date(epochSecsRangeEnd*1000L));
+				
+		    String title = "Total Rewards = " + rwdsTot + " For Customer id =" + entry.getKey() + " Between " + dateTimeBegin + " And " + dateTimeEnd + "."; 
+		    totalsMapByCustomer.put(title, mSI);
+		    		
+		    rRwdsTotalByTimeInterval.put(entry.getKey(), totalsMapByCustomer);
 		}
 	    return rRwdsTotalByTimeInterval;
 	  }
@@ -230,6 +214,49 @@ class CustomerController {
 	    customerRepo.deleteById(id);
 	  }
 
+	  //helper function to return map for all customers or just one depending on id (-1 indicated return all customer maps)
+	  Map<Long, Map<String, List<Integer>>> getAllRwdsMapByTimeInterval(Long id, Long epochSecsRangeBegin, Long epochSecsRangeEnd, String tzIdPrefix, String  tzIdSuffix){
+		    Map<Long, Map<String, List<Integer>>> allRwdsMapByTimeInterval = new HashMap<>();
+		  	
+		    List<Customer> acs = new ArrayList<Customer>();
+		    if (id == -1L) {
+		    	acs.addAll(allCustomers());
+		    }else {
+		    	acs.add(getCustomerById(id));
+		    }
+		    
+			for (Customer c : acs) {
+				Map<String, List<Integer>> cmRwdsMapByTimeInterval = new HashMap<String, List<Integer>>();
+			    allRwdsMapByTimeInterval.put(c.getId(), cmRwdsMapByTimeInterval);
+			    
+				List<Long> tIds = c.getTransactionIds();
+			    List<Transaction> ts = (ArrayList<Transaction>)filterTransactionsByDateRange(tIds, epochSecsRangeBegin, epochSecsRangeEnd);	
+			    
+			    for (Transaction t : ts) {
+			    	Date date = new Date(t.getEpochSecs() * 1000);
+			    	log.info("date = "+date);
+			    	
+			    	ZoneId zId = ZoneId.of(tzIdPrefix+"/"+tzIdSuffix);
+			    	log.info("tzIdPrefix = "+tzIdPrefix);
+			    	log.info("tzIdSuffix = "+tzIdSuffix);
+			    	log.info("zId = "+zId);
+			    	
+			    	LocalDate localDate = date.toInstant().atZone(zId).toLocalDate();
+			    	log.info("localDate = "+localDate);
+			    	
+			    	Month m = Month.of(localDate.getMonthValue());
+			    	Year y = Year.of(localDate.getYear());
+			    	String myStr = m.toString() + "-" + y.toString();
+			    	
+			    	List<Integer> rwdsList = cmRwdsMapByTimeInterval.containsKey(myStr) ? cmRwdsMapByTimeInterval.get(myStr) : new ArrayList<Integer>();
+			    	rwdsList.add(t.getRewardsPoints());
+			    	cmRwdsMapByTimeInterval.put(myStr, rwdsList);
+			    }
+			}
+		  
+		    return allRwdsMapByTimeInterval;
+	  }
+	  
 	  //helper function used by multiple APIs to return transaction ArrayList by date range
 	  List<Transaction> filterTransactionsByDateRange(List<Long> tIds, Long epochSecsRangeBegin, Long epochSecsRangeEnd){
 		List<Transaction> ts = new ArrayList<Transaction>();
