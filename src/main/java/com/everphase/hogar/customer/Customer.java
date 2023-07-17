@@ -6,8 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javax.persistence.Column;
+import javax.persistence.CollectionTable;
+import javax.persistence.JoinColumn;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
@@ -22,15 +26,16 @@ public class Customer {
 	  @GeneratedValue
 	  private Long id;
 	  
-	  /**
-	   * ArrayList<Transaction> - ArrayList chosen for utility & versatility
-	   */
-	  @ElementCollection
-	  private List<Transaction> transactions = new ArrayList<Transaction>();
-	  
-	  @ElementCollection
-	  private List<Long> transactionIds = new ArrayList<Long>();
-	  
+	  @ElementCollection(targetClass = Long.class, fetch = FetchType.EAGER)
+  	  @CollectionTable(name = "transactionIds", joinColumns = @JoinColumn(name = "customer_id"))
+  	  @Column(name = "transactionId", nullable = false)
+  	  private List<Long> transactionIds = new ArrayList<Long>();
+
+	  @ElementCollection(targetClass = Transaction.class, fetch = FetchType.LAZY)
+  	  @CollectionTable(name = "transactions", joinColumns = @JoinColumn(name = "customer_id"))
+  	  @Column(name = "transaction", nullable = true)
+  	  private List<Transaction> transactions = new ArrayList<Transaction>();
+  	
 	  private String userId;
 	  private Integer rewardsPoints;
 	

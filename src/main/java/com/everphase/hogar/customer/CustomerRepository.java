@@ -9,5 +9,4 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 	boolean existsByUserId(String userId);
 	List<Customer> findAll();
 	Optional<Customer> findById(Long id);
-	CustomerDTO findByUserId(String userId);
 }

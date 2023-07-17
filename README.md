@@ -4,16 +4,16 @@ SpringToolSuite4 was used as IDE. STS4 has Eclipse as its foundation. Class comp
 
 Entry point is @ src/main/java/com/everphase/hogar - link is below:
 
-https://github.com/jahearnco/hogarcontrols/tree/main/src/main/java/com/everphase/hogar
+	https://github.com/jahearnco/hogarcontrols/tree/main/src/main/java/com/everphase/hogar
 
 Application Launch begins @ HogarApplication.java as shown below. Once running tests can proceed per curl -X command line as shown in test_cases.txt file provided at root level of project.
 
-@SpringBootApplication
-public class HogarApplication {
-	public static void main(String[] args) {
-		SpringApplication.run(HogarApplication.class, args);
+	@SpringBootApplication
+	public class HogarApplication {
+		public static void main(String[] args) {
+			SpringApplication.run(HogarApplication.class, args);
+		}
 	}
-}
 
 An Embedded Db was implemented for this challenge. Apache Maven is used along with Spring Boot for product and build management. Please see pom.xml and mvnw files. 
 
@@ -27,16 +27,16 @@ The following dependency was added to pom.xml to provide more RESTful functional
 
 I have provided one example of an API call that returns links as shown below. It would be a simple but slightly time consuming matter to modify the rest of my solution such that all @GetMappings return links in the same manner. However, as there is no UI being implemented and I have no knowledge wrt what the UI might be I consider it to be more versatile to return the information as json so UI is free to do what it will with the information. That may include links and it may not. This is for a future project in other words.
 
-@GetMapping("/customers/{id}")
-EntityModel<Customer> one(@PathVariable Long id) {
-
-  Customer customer = customerRepo.findById(id) //
-    .orElseThrow(() -> new CustomerNotFoundException(id));
-
-  return EntityModel.of(customer, //
-    linkTo(methodOn(CustomerController.class).one(id)).withSelfRel(),
-    linkTo(methodOn(CustomerController.class).allCustomers()).withRel("customers"));
-}
+	@GetMapping("/customers/{id}")
+	EntityModel<Customer> one(@PathVariable Long id) {
+	
+	  Customer customer = customerRepo.findById(id) //
+	    .orElseThrow(() -> new CustomerNotFoundException(id));
+	
+	  return EntityModel.of(customer, //
+	    linkTo(methodOn(CustomerController.class).one(id)).withSelfRel(),
+	    linkTo(methodOn(CustomerController.class).allCustomers()).withRel("customers"));
+	}
 
 
 Well over 90% of logic is presented according to CustomerController.java class.
