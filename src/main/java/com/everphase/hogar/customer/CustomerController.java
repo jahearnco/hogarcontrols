@@ -154,9 +154,10 @@ class CustomerController {
 		return ts;
 	}
 
-	// return all rewards by range and timezoneid. @PathVariable are required
-	@GetMapping("/customers/{id}/monthlyRewardsMap/{epochSecsRangeBegin}/{epochSecsRangeEnd}/{tzIdPrefix}/{tzIdSuffix}")
+	// return all rewards by id, time interval, range and timezoneid. @PathVariable are required
+	@GetMapping("/customers/{id}/rewards/{interval}/{epochSecsRangeBegin}/{epochSecsRangeEnd}/{tzIdPrefix}/{tzIdSuffix}")
 	Map<Long, TimeRangeRewards> getTimeRangeRewardsByCustomer(@PathVariable Long id,
+			@PathVariable String interval,
 			@PathVariable Long epochSecsRangeBegin, @PathVariable Long epochSecsRangeEnd,
 			@PathVariable String tzIdPrefix, @PathVariable String tzIdSuffix) {
 		Map<Long, TimeRangeRewards> timeRangeRewardsByCustomer = new HashMap<>();
@@ -187,29 +188,28 @@ class CustomerController {
 
 				LocalDate localDate = date.toInstant().atZone(zId).toLocalDate();
 				// log.info("localDate = "+localDate);
+				
+				String yearStr = "" + Year.of(localDate.getYear());
+				String intervalKey = interval.equals("month") ? "" + Month.of(localDate.getMonthValue()) + "-" + yearStr : yearStr;
 
-				Month m = Month.of(localDate.getMonthValue());
-				Year y = Year.of(localDate.getYear());
-				String myStr = m.toString() + "-" + y.toString();
-
-				List<Integer> rwdsList = timeRangeRewards.containsKey(myStr) ? timeRangeRewards.get(myStr)
-						: new ArrayList<Integer>();
+				List<Integer> rwdsList = timeRangeRewards.containsKey(intervalKey) ? timeRangeRewards.get(intervalKey) : new ArrayList<Integer>();
 				rwdsList.add(t.getRewardsPoints());
-				timeRangeRewards.put(myStr, rwdsList);
+				timeRangeRewards.put(intervalKey, rwdsList);
 			}
 		}
 
 		return timeRangeRewardsByCustomer;
 	}
 
-	// return total rewards by customer id and by month. @PathVariable are required
-	@GetMapping("/customers/{id}/monthlyLabeledRewardsTotals/{epochSecsRangeBegin}/{epochSecsRangeEnd}/{tzIdPrefix}/{tzIdSuffix}")
+	// return total rewards by id, time interval, range and timezoneid. @PathVariable are required
+	@GetMapping("/customers/{id}/rewardsTotals/{interval}/{epochSecsRangeBegin}/{epochSecsRangeEnd}/{tzIdPrefix}/{tzIdSuffix}")
 	Map<Long, LabeledTimeRangeRewardsTotals> getLabeledTimeRangeRewardsTotalsByCustomer(@PathVariable Long id,
+			@PathVariable String interval,
 			@PathVariable Long epochSecsRangeBegin, @PathVariable Long epochSecsRangeEnd,
 			@PathVariable String tzIdPrefix, @PathVariable String tzIdSuffix) {
 
 		Map<Long, LabeledTimeRangeRewardsTotals> labeledTimeRangeRewardsTotalsByCustomer = new HashMap<Long, LabeledTimeRangeRewardsTotals>();
-		Map<Long, TimeRangeRewards> timeRangeRewardsByCustomer = getTimeRangeRewardsByCustomer(id, epochSecsRangeBegin,
+		Map<Long, TimeRangeRewards> timeRangeRewardsByCustomer = getTimeRangeRewardsByCustomer(id, interval, epochSecsRangeBegin,
 				epochSecsRangeEnd, tzIdPrefix, tzIdSuffix);
 
 		for (Map.Entry<Long, TimeRangeRewards> timeRangeRewardsEntry : timeRangeRewardsByCustomer.entrySet()) {
